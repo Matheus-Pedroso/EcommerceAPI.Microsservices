@@ -1,5 +1,6 @@
 
 using Mango.Services.AuthAPI.Data;
+using Mango.Services.AuthAPI.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
@@ -16,7 +17,7 @@ namespace Mango.Services.AuthAPI
                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
             // For Identity
-            builder.Services.AddIdentity<IdentityUser, IdentityRole>()
+            builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
                 .AddEntityFrameworkStores<AppDbContext>()
                 .AddDefaultTokenProviders();
             
