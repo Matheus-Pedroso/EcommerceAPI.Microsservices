@@ -1,8 +1,11 @@
 
 using Mango.Services.AuthAPI.Data;
 using Mango.Services.AuthAPI.Models;
+using Mango.Services.AuthAPI.Service;
+using Mango.Services.AuthAPI.Service.IService;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 
 namespace Mango.Services.AuthAPI
 {
@@ -15,6 +18,12 @@ namespace Mango.Services.AuthAPI
             // Add services to the container.
             builder.Services.AddDbContext<AppDbContext>(options =>
                options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<IJwtTokenGenerator, JwtTokenGenerator>();
+
+            // Configure JwtOptions using the "ApiSettings" section from appsettings.json
+            builder.Services.Configure<JwtOptions>(builder.Configuration.GetSection("ApiSettings:JwtOptions"));
 
             // For Identity
             builder.Services.AddIdentity<ApplicationUser, IdentityRole>()
@@ -37,7 +46,6 @@ namespace Mango.Services.AuthAPI
             }
 
             app.UseHttpsRedirection();
-            app.UseAuthentication();
             app.UseAuthorization();
 
 

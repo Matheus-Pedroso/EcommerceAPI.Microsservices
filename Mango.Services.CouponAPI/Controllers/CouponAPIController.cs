@@ -11,7 +11,7 @@ namespace Mango.Services.CouponAPI.Controllers;
 [ApiController]
 public class CouponAPIController(AppDbContext _context, IMapper _mapper) : ControllerBase
 {
-    private ResponseDTO _response = new ResponseDTO();
+    protected ResponseDTO _response = new ResponseDTO();
 
     [HttpGet]
     public ResponseDTO Get()

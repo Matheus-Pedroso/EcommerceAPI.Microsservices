@@ -35,7 +35,7 @@ namespace Mango.Services.CouponAPI
             }
 
             app.UseHttpsRedirection();
-
+            app.UseAuthentication();
             app.UseAuthorization();
 
 
