@@ -16,11 +16,14 @@ namespace Mango.Web
             builder.Services.AddHttpClient();
 
             builder.Services.AddHttpClient<ICouponService, CouponService>();
+            builder.Services.AddHttpClient<IAuthService, AuthService>();
 
             StaticDetails.CouponAPIBase = builder.Configuration["ServiceUrls:CouponAPI"];
+            StaticDetails.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"];
 
             builder.Services.AddScoped<IBaseService, BaseService>();
             builder.Services.AddScoped<ICouponService, CouponService>();
+            builder.Services.AddScoped<IAuthService, AuthService>();
 
             var app = builder.Build();
 
