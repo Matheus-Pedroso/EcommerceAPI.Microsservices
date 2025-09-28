@@ -39,7 +39,8 @@ public class AuthService(AppDbContext _context,
                 return new LoginResponseDTO() { User = null, Token = "" };
 
             // Create JWT Token
-            var token = _jwtTokenGenerator.GenerateToken(user);
+            var roles = await _userManager.GetRolesAsync(user);
+            var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
             UserDTO userDTO = new()
             {
