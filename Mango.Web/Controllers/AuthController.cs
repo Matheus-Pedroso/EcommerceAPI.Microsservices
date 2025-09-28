@@ -36,7 +36,7 @@ public class AuthController(IAuthService authService, ITokenProvider tokenProvid
         }
         else
         {
-            ModelState.AddModelError("CustomError", responseDTO?.Message??"Error encountered when login");
+            TempData["error"] = responseDTO.Message;
             return View(model);
         }
     }
@@ -75,8 +75,12 @@ public class AuthController(IAuthService authService, ITokenProvider tokenProvid
                 return RedirectToAction(nameof(Login));
             }
         }
+        else
+        {
+            TempData["error"] = result.Message;
+        }
 
-        var roleList = new List<SelectListItem>()
+            var roleList = new List<SelectListItem>()
         {
             new SelectListItem{ Text = StaticDetails.RoleAdmin, Value = StaticDetails.RoleAdmin },
             new SelectListItem{ Text = StaticDetails.RoleCustomer, Value = StaticDetails.RoleCustomer },

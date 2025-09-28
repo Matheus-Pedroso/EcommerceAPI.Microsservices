@@ -13,7 +13,7 @@ public class AuthService(IBaseService baseService) : IAuthService
             ApiType = StaticDetails.ApiType.POST,
             Data = registrationRequestDTO,
             Url = StaticDetails.AuthAPIBase + "/api/auth/AssignRole"
-        });
+        }, withBearer: false);
     }
 
     public async Task<ResponseDTO?> LoginAsync(LoginRequestDTO loginRequestDTO)
@@ -23,7 +23,7 @@ public class AuthService(IBaseService baseService) : IAuthService
             ApiType = StaticDetails.ApiType.POST,
             Data = loginRequestDTO,
             Url = StaticDetails.AuthAPIBase + "/api/auth/login"
-        });
+        }, withBearer: false);
     }
 
     public async Task<ResponseDTO?> RegisterAsync(RegistrationRequestDTO registrationRequestDTO)
@@ -33,6 +33,6 @@ public class AuthService(IBaseService baseService) : IAuthService
             ApiType = StaticDetails.ApiType.POST,
             Data = registrationRequestDTO,
             Url = StaticDetails.AuthAPIBase + "/api/auth/register"
-        });
+        }, withBearer: false);
     }
 }
