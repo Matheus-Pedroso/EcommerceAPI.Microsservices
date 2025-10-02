@@ -8,7 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Mango.Services.ProductAPI.Controllers;
 
-[Route("api/[controller]")]
+[Route("api/product")]
 [ApiController]
 public class ProductController(AppDbContext _context, IMapper _mapper) : ControllerBase
 {
