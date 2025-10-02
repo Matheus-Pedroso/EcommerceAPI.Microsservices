@@ -53,18 +53,20 @@ public class CouponController(ICouponService couponService) : Controller
 
     public async Task<IActionResult> CouponDelete(int couponId)
     {
+        CouponDTO? coupon = new CouponDTO();
+
         ResponseDTO? response = await couponService.GetCouponByIdAsync(couponId);
 
         if (response != null && response.IsSuccess)
         {
-            CouponDTO? model = JsonConvert.DeserializeObject<CouponDTO>(Convert.ToString(response.Result));
-            return View(model);
+            coupon = JsonConvert.DeserializeObject<CouponDTO>(Convert.ToString(response.Result));
         }
         else
         {
             TempData["Error"] = response?.Message;
+            return RedirectToAction(nameof(CouponIndex));
         }
-        return NotFound();
+        return View(coupon);
     }
 
     [HttpPost]

@@ -15,7 +15,6 @@ public class CouponAPIController(AppDbContext _context, IMapper _mapper) : Contr
     protected ResponseDTO _response = new ResponseDTO();
 
     [HttpGet]
-    [Authorize]
     public ResponseDTO Get()
     {
         try
@@ -33,6 +32,7 @@ public class CouponAPIController(AppDbContext _context, IMapper _mapper) : Contr
 
     [HttpGet]
     [Route("{id:int}")]
+    [Authorize]
 
     public ResponseDTO Get(int id)
     {

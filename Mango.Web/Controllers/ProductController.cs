@@ -26,7 +26,9 @@ public class ProductController(IProductService productService) : Controller
     }
 
     public async Task<IActionResult> ProductCreate()
-        => View();
+    {
+        return View();
+    }
 
     [HttpPost]
     public async Task<IActionResult> ProductCreate(ProductDTO model)
@@ -60,6 +62,7 @@ public class ProductController(IProductService productService) : Controller
         else
         {
             TempData["Error"] = response?.Message;
+            return RedirectToAction(nameof(ProductIndex));
         }
         return View(product);
     }
@@ -96,6 +99,7 @@ public class ProductController(IProductService productService) : Controller
         else
         {
             TempData["Error"] = response?.Message;
+            return RedirectToAction(nameof(ProductIndex));
         }
         return View(product);
     }
