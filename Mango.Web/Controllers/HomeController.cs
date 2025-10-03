@@ -1,21 +1,47 @@
 using System.Diagnostics;
 using Mango.Web.Models;
+using Mango.Web.Service;
+using Mango.Web.Service.IService;
 using Microsoft.AspNetCore.Mvc;
+using Newtonsoft.Json;
 
 namespace Mango.Web.Controllers
 {
-    public class HomeController : Controller
+    public class HomeController(IProductService productService, ILogger<HomeController> logger) : Controller
     {
-        private readonly ILogger<HomeController> _logger;
-
-        public HomeController(ILogger<HomeController> logger)
+        public async Task<IActionResult> Index()
         {
-            _logger = logger;
+            List<ProductDTO> products = new List<ProductDTO>();
+
+            ResponseDTO? response = await productService.GetProductsAsync();
+
+            if (response != null && response.IsSuccess)
+            {
+                products = JsonConvert.DeserializeObject<List<ProductDTO>>(Convert.ToString(response.Result));
+            }
+            else
+            {
+                TempData["Error"] = response?.Message;
+            }
+            return View(products);
         }
 
-        public IActionResult Index()
+        public async Task<IActionResult> Details(int productId)
         {
-            return View();
+            ProductDTO product = new ProductDTO();
+
+            ResponseDTO? response = await productService.GetProductAsync(productId);
+
+            if (response != null && response.IsSuccess)
+            {
+                product = JsonConvert.DeserializeObject<ProductDTO>(Convert.ToString(response.Result));
+            }
+            else
+            {
+                TempData["Error"] = response?.Message;
+                return RedirectToAction(nameof(Index));
+            }
+            return View(product);
         }
 
         public IActionResult Privacy()
