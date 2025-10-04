@@ -22,9 +22,11 @@ namespace Mango.Services.ShoppingCartAPI
 
             // Services
             builder.Services.AddScoped<IProductService, ProductService>();
+            builder.Services.AddScoped<ICouponService, CouponService>();
 
             // Interservices
             builder.Services.AddHttpClient("Product", u => u.BaseAddress = new Uri(builder.Configuration["ServicesUrls:ProductAPI"]));
+            builder.Services.AddHttpClient("Coupon", u => u.BaseAddress = new Uri(builder.Configuration["ServicesUrls:CouponAPI"]));
 
             // Auto Mapper Configuration
             IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();

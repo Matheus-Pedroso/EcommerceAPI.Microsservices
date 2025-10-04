@@ -1,4 +1,5 @@
-﻿using AutoMapper;
+﻿using System.Net.Http;
+using AutoMapper;
 using Mango.Services.ShoppingCartAPI.Data;
 using Mango.Services.ShoppingCartAPI.Models;
 using Mango.Services.ShoppingCartAPI.Models.DTO;
@@ -12,7 +13,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers;
 
 [Route("api/cart")]
 [ApiController]
-public class CartAPIController(AppDbContext _context, IMapper mapper, IProductService productService) : ControllerBase
+public class CartAPIController(AppDbContext _context, IMapper mapper, IProductService productService, ICouponService couponService) : ControllerBase
 {
     private ResponseDTO _response = new ResponseDTO();
 
@@ -31,6 +32,17 @@ public class CartAPIController(AppDbContext _context, IMapper mapper, IProductSe
             {
                 item.Product = await productService.GetProductById(item.ProductId);
                 cartDTO.CartHeader.CartTotal += (item.Count * item.Product.Price);
+            }
+
+            // Apply discount
+            if (!string.IsNullOrEmpty(cartDTO.CartHeader.CouponCode))
+            {
+                var coupon = await couponService.GetCouponByCode(cartDTO.CartHeader.CouponCode);
+                if (coupon != null && cartDTO.CartHeader.CartTotal > coupon.MinAmount)
+                {
+                    cartDTO.CartHeader.CartTotal -= coupon.DiscountAmount;
+                    cartDTO.CartHeader.Discount = coupon.DiscountAmount;
+                }
             }
 
             _response.Result = cartDTO; 
