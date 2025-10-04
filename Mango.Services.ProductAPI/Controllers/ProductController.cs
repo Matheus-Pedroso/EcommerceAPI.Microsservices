@@ -31,7 +31,7 @@ public class ProductController(AppDbContext _context, IMapper _mapper) : Control
     }
 
     [HttpGet("{id}")]
-    [Authorize(Roles = "ADMINISTRATOR")]
+    //[Authorize(Roles = "ADMINISTRATOR")]
     public ResponseDTO Get(int id)
     {
         try

@@ -2,6 +2,7 @@
 using Mango.Services.ShoppingCartAPI.Data;
 using Mango.Services.ShoppingCartAPI.Models;
 using Mango.Services.ShoppingCartAPI.Models.DTO;
+using Mango.Services.ShoppingCartAPI.Services.IServices;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -11,7 +12,7 @@ namespace Mango.Services.ShoppingCartAPI.Controllers;
 
 [Route("api/cart")]
 [ApiController]
-public class CartAPIController(AppDbContext _context, IMapper mapper) : ControllerBase
+public class CartAPIController(AppDbContext _context, IMapper mapper, IProductService productService) : ControllerBase
 {
     private ResponseDTO _response = new ResponseDTO();
 
@@ -28,12 +29,51 @@ public class CartAPIController(AppDbContext _context, IMapper mapper) : Controll
             
             foreach (var item in cartDTO.CartDetails)
             {
+                item.Product = await productService.GetProductById(item.ProductId);
                 cartDTO.CartHeader.CartTotal += (item.Count * item.Product.Price);
             }
 
             _response.Result = cartDTO; 
         }
         catch (Exception ex) 
+        {
+            _response.IsSuccess = false;
+            _response.Message = ex.Message;
+        }
+        return _response;
+    }
+
+    [HttpPost("ApplyCoupon")]
+    public async Task<ResponseDTO> ApplyCoupon([FromBody] CartDTO cartDTO)
+    {
+        try
+        {
+            var cart = await _context.CartHeaders.FirstAsync(u => u.UserId == cartDTO.CartHeader.UserId);
+            cart.CouponCode = cartDTO.CartHeader.CouponCode;
+            _context.CartHeaders.Update(cart);
+            await _context.SaveChangesAsync();
+            _response.Result = true;
+        }
+        catch (Exception ex)
+        {
+            _response.IsSuccess = false;
+            _response.Message = ex.Message;
+        }
+        return _response;
+    }
+
+    [HttpPost("RemoveCoupon")]
+    public async Task<ResponseDTO> RemoveCoupon([FromBody] CartDTO cartDTO)
+    {
+        try
+        {
+            var cart = await _context.CartHeaders.FirstAsync(u => u.UserId == cartDTO.CartHeader.UserId);
+            cart.CouponCode = "";
+            _context.CartHeaders.Update(cart);
+            await _context.SaveChangesAsync();
+            _response.Result = true;
+        }
+        catch (Exception ex)
         {
             _response.IsSuccess = false;
             _response.Message = ex.Message;
