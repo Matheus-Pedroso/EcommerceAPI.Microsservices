@@ -17,7 +17,7 @@ public class CartAPIController(AppDbContext _context, IMapper mapper, IProductSe
 {
     private ResponseDTO _response = new ResponseDTO();
 
-    [HttpGet("/GetCart/{userId}")]
+    [HttpGet("GetCart/{userId}")]
     public async Task<ResponseDTO> GetCartFromUserId(string userId)
     {
         try
