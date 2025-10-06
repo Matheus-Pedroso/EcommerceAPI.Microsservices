@@ -10,7 +10,7 @@ public class CouponService(IBaseService baseService) : ICouponService
     {
         return await baseService.SendAsync(new RequestDTO 
         { 
-            ApiType = StaticDetails.ApiType.PUT, 
+            ApiType = StaticDetails.ApiType.POST, 
             Url = StaticDetails.CouponAPIBase + "/api/coupon",
             Data = couponDTO
         });

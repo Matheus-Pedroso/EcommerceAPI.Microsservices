@@ -1,4 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
+using System.Reflection.Metadata.Ecma335;
 using Mango.Services.Web.Models.DTO;
 using Mango.Web.Models;
 using Mango.Web.Service.IService;
@@ -16,10 +17,47 @@ public class CartController(ICartService cartService) : Controller
         return View(await LoadCartDTOBasedOnLoggedInUser());
     }
 
+    public async Task<IActionResult> Remove(int cartDetailsId)
+    {
+        var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
+        ResponseDTO? response = await cartService.RemoveCartAsync(cartDetailsId);
+        if (response != null && response.IsSuccess)
+        {
+            TempData["success"] = "Cart updated successfully";
+            return RedirectToAction(nameof(CartIndex));
+        }
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ApplyCoupon(CartDTO cartDTO)
+    {
+        ResponseDTO? response = await cartService.ApplyCouponAsync(cartDTO);
+        if (response != null && response.IsSuccess)
+        {
+            TempData["success"] = "Coupon has been added";
+            return RedirectToAction(nameof(CartIndex));
+        }
+        return View();
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> RemoveCoupon(CartDTO cartDTO)
+    {
+        cartDTO.CartHeader.CouponCode = "";
+        ResponseDTO? response = await cartService.ApplyCouponAsync(cartDTO);
+        if (response != null && response.IsSuccess)
+        {
+            TempData["success"] = "Coupon has been added";
+            return RedirectToAction(nameof(CartIndex));
+        }
+        return View();
+    }
+
     private async Task<CartDTO> LoadCartDTOBasedOnLoggedInUser()
     {
         var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
-        ResponseDTO? response = await cartService.GetCart(userId);
+        ResponseDTO? response = await cartService.GetCartAsync(userId);
         if (response != null && response.IsSuccess)
         {
             CartDTO cartDTO = JsonConvert.DeserializeObject<CartDTO>(Convert.ToString(response.Result));

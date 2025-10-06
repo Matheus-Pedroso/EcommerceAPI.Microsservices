@@ -7,7 +7,7 @@ namespace Mango.Web.Service;
 
 public class CartService(IBaseService baseService) : ICartService
 {
-    public async Task<ResponseDTO?> ApplyCoupon(CartDTO cartDTO)
+    public async Task<ResponseDTO?> ApplyCouponAsync(CartDTO cartDTO)
     {
         return await baseService.SendAsync(new RequestDTO()
         {
@@ -17,7 +17,7 @@ public class CartService(IBaseService baseService) : ICartService
         });
     }
 
-    public async Task<ResponseDTO?> GetCart(string userId)
+    public async Task<ResponseDTO?> GetCartAsync(string userId)
     {
         return await baseService.SendAsync(new RequestDTO()
         {
@@ -26,13 +26,13 @@ public class CartService(IBaseService baseService) : ICartService
         });
     }
 
-    public async Task<ResponseDTO?> RemoveCart(int cartDetailsId)
+    public async Task<ResponseDTO?> RemoveCartAsync(int cartDetailsId)
     {
         return await baseService.SendAsync(new RequestDTO()
         {
             ApiType = StaticDetails.ApiType.POST,
             Data = cartDetailsId,
-            Url = StaticDetails.CartAPIBase + $"/api/cart/RemoveCoupon"
+            Url = StaticDetails.CartAPIBase + $"/api/cart/RemoveCart"
         });
     }
 
