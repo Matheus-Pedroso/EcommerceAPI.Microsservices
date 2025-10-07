@@ -4,6 +4,7 @@ using Mango.Services.ShoppingCartAPI.Data;
 using Mango.Services.ShoppingCartAPI.Extensions;
 using Mango.Services.ShoppingCartAPI.Services;
 using Mango.Services.ShoppingCartAPI.Services.IServices;
+using Mango.Services.ShoppingCartAPI.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -24,9 +25,13 @@ namespace Mango.Services.ShoppingCartAPI
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<ICouponService, CouponService>();
 
+            // ClienteHandler
+            builder.Services.AddHttpContextAccessor();
+            builder.Services.AddScoped<AuthenticationHttpClientHandler>();
+
             // Interservices
-            builder.Services.AddHttpClient("Product", u => u.BaseAddress = new Uri(builder.Configuration["ServicesUrls:ProductAPI"]));
-            builder.Services.AddHttpClient("Coupon", u => u.BaseAddress = new Uri(builder.Configuration["ServicesUrls:CouponAPI"]));
+            builder.Services.AddHttpClient("Product", u => u.BaseAddress = new Uri(builder.Configuration["ServicesUrls:ProductAPI"])).AddHttpMessageHandler<AuthenticationHttpClientHandler>();
+            builder.Services.AddHttpClient("Coupon", u => u.BaseAddress = new Uri(builder.Configuration["ServicesUrls:CouponAPI"])).AddHttpMessageHandler<AuthenticationHttpClientHandler>();
 
             // Auto Mapper Configuration
             IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
