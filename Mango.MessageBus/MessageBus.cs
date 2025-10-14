@@ -8,7 +8,8 @@ namespace Mango.MessageBus;
 
 public class MessageBus : IMessageBus
 {
-    private string connectionString = Environment.GetEnvironmentVariable("ConnectionStringAzure");
+    private string connectionString = "Endpoint=sb://project-mango.servicebus.windows.net/;SharedAccessKeyName=RootManageSharedAccessKey;SharedAccessKey=tj9iEgv4xgnnlcvHQLuhxkpJxddAv1usQ+ASbJBkJwc=";
+}
     public async Task PublishMessage(object message, string topic_queue_Name)
     {
         await using var client = new ServiceBusClient(connectionString);
