@@ -1,4 +1,3 @@
-
 using AutoMapper;
 using Mango.Services.ShoppingCartAPI.Data;
 using Mango.Services.ShoppingCartAPI.Extensions;
@@ -8,6 +7,7 @@ using Mango.Services.ShoppingCartAPI.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using AzureBus = Mango.MessageBus;
 
 namespace Mango.Services.ShoppingCartAPI
 {
@@ -24,6 +24,9 @@ namespace Mango.Services.ShoppingCartAPI
             // Services
             builder.Services.AddScoped<IProductService, ProductService>();
             builder.Services.AddScoped<ICouponService, CouponService>();
+
+            // Azure ServiceBus
+            builder.Services.AddScoped<AzureBus.IMessageBus, AzureBus.MessageBus>();
 
             // ClienteHandler
             builder.Services.AddHttpContextAccessor();
