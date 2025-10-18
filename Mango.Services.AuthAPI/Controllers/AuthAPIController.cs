@@ -1,14 +1,16 @@
 ﻿using Azure;
+using Mango.MessageBus;
 using Mango.Services.AuthAPI.Models.DTO;
 using Mango.Services.AuthAPI.Service.IService;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 
 namespace Mango.Services.AuthAPI.Controllers;
 
 [Route("api/auth")]
 [ApiController]
-public class AuthAPIController(IAuthService authService) : ControllerBase
+public class AuthAPIController(IAuthService authService, IMessageBus messageBus, IConfiguration configuration) : ControllerBase
 {
     protected ResponseDTO _response = new ResponseDTO();
 
@@ -22,7 +24,19 @@ public class AuthAPIController(IAuthService authService) : ControllerBase
             _response.Message = errorMessage;
             return BadRequest(_response);
         }
-
+        else
+        {
+            try
+            {
+                await messageBus.PublishMessage(model.Email, configuration.GetValue<string>("TopicAndQueueNames:EmailRegisterUserQueue"));
+                _response.Result = true;
+            }
+            catch (Exception ex)
+            {
+                _response.IsSuccess = false;
+                _response.Message = ex.Message;
+            }
+        }
         return Ok(_response);
     }
 
