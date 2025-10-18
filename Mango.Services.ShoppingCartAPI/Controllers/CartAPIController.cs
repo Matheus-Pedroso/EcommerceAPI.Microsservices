@@ -80,7 +80,7 @@ public class CartAPIController(AppDbContext _context, IMapper mapper, IProductSe
     {
         try
         {
-            await messageBus.PublishMessage(cartDTO, configuration.GetValue<string>("TopicAndQueueNames:EmailShoppingCart"));
+            await messageBus.PublishMessage(cartDTO, configuration.GetValue<string>("TopicAndQueueNames:EmailShoppingCartQueue"));
             _response.Result = true;
         }
         catch (Exception ex)
