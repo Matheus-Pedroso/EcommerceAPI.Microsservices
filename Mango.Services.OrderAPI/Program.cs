@@ -1,11 +1,13 @@
-
 using AutoMapper;
 using Mango.Services.OrderAPI.Data;
 using Mango.Services.OrderAPI.Extensions;
+using Mango.Services.OrderAPI.Services;
+using Mango.Services.OrderAPI.Services.IServices;
 using Mango.Services.OrderAPI.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using AzureBus = Mango.MessageBus;
 
 namespace Mango.Services.OrderAPI
 {
@@ -19,18 +21,27 @@ namespace Mango.Services.OrderAPI
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+            // Services
+            builder.Services.AddScoped<IProductService, ProductService>();
+
+            // Azure ServiceBus
+            builder.Services.AddScoped<AzureBus.IMessageBus, AzureBus.MessageBus>();
+
+            // Interservices
+            builder.Services.AddHttpClient("Product", u => u.BaseAddress = new Uri(builder.Configuration["ServicesUrls:ProductAPI"])).AddHttpMessageHandler<AuthenticationHttpClientHandler>();
+
             // ClienteHandler
             builder.Services.AddHttpContextAccessor();
             builder.Services.AddScoped<AuthenticationHttpClientHandler>();
-
-            // Authentication
-            builder.AddAppAuthentication();
-            builder.Services.AddAuthorization();
 
             // Auto Mapper Configuration
             IMapper mapper = MappingConfig.RegisterMaps().CreateMapper();
             builder.Services.AddSingleton(mapper);
             builder.Services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
+
+            // Authentication
+            builder.AddAppAuthentication();
+            builder.Services.AddAuthorization();
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
