@@ -17,6 +17,12 @@ public class CartController(ICartService cartService) : Controller
         return View(await LoadCartDTOBasedOnLoggedInUser());
     }
 
+    [Authorize]
+    public async Task<IActionResult> Checkout()
+    {
+        return View(await LoadCartDTOBasedOnLoggedInUser());
+    }
+
     public async Task<IActionResult> Remove(int cartDetailsId)
     {
         var userId = User.Claims.Where(u => u.Type == JwtRegisteredClaimNames.Sub)?.FirstOrDefault()?.Value;
