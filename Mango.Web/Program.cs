@@ -20,12 +20,13 @@ namespace Mango.Web
             builder.Services.AddHttpClient<IProductService, ProductService>();
             builder.Services.AddHttpClient<ICouponService, CouponService>();
             builder.Services.AddHttpClient<IAuthService, AuthService>();
+            builder.Services.AddHttpClient<IOrderService, OrderService>();
             
-
             StaticDetails.CouponAPIBase = builder.Configuration["ServiceUrls:CouponAPI"];
             StaticDetails.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"];
             StaticDetails.ProductAPIBase = builder.Configuration["ServiceUrls:ProductAPI"];
             StaticDetails.CartAPIBase = builder.Configuration["ServiceUrls:CartAPI"];
+            StaticDetails.OrderAPIBase = builder.Configuration["ServiceUrls:OrderAPI"];
 
             builder.Services.AddScoped<IBaseService, BaseService>();
             builder.Services.AddScoped<ICouponService, CouponService>();
@@ -33,6 +34,7 @@ namespace Mango.Web
             builder.Services.AddScoped<IAuthService, AuthService>();
             builder.Services.AddScoped<ITokenProvider, TokenProvider>();
             builder.Services.AddScoped<ICartService, CartService>();
+            builder.Services.AddScoped<IOrderService, OrderService>();
 
             // Authetication
             builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)

@@ -6,6 +6,7 @@ public class StaticDetails
     public static string AuthAPIBase { get; set; } = string.Empty;
     public static string ProductAPIBase { get; set; } = string.Empty;
     public static string CartAPIBase { get; set; } = string.Empty;
+    public static string OrderAPIBase { get;set; } = string.Empty;
 
     public const string RoleAdmin = "ADMIN";
     public const string RoleCustomer = "CUSTOMER";

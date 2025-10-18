@@ -27,7 +27,7 @@ public class OrderAPIController(IProductService productService, AppDbContext con
             orderHeaderDTO.Status = StaticDetails.Status_Pending;
             orderHeaderDTO.OrderDetails = mapper.Map<IEnumerable<OrderDetailsDTO>>(cartDTO.CartDetails);
 
-            var orderCreated = await context.OrderHeaders.AddAsync(mapper.Map<OrderHeader>(orderHeaderDTO));
+            var orderCreated = context.OrderHeaders.Add(mapper.Map<OrderHeader>(orderHeaderDTO)).Entity;
             await context.SaveChangesAsync();
 
             orderHeaderDTO.OrderHeaderId = orderHeaderDTO.OrderHeaderId;
