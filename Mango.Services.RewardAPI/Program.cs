@@ -1,5 +1,8 @@
 
 using Mango.Services.RewardAPI.Data;
+using Mango.Services.RewardAPI.Extension;
+using Mango.Services.RewardAPI.Messaging;
+using Mango.Services.RewardAPI.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
@@ -15,6 +18,12 @@ namespace Mango.Services.RewardAPI
             // Add services to the container.
             builder.Services.AddDbContext<AppDbContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+            var optionBuilder = new DbContextOptionsBuilder<AppDbContext>();
+            optionBuilder.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection"));
+            builder.Services.AddSingleton(new RewardsService(optionBuilder.Options));
+
+            builder.Services.AddSingleton<IAzureServiceBusConsumer, AzureServiceBusConsumer>();
 
             builder.Services.AddControllers();
             // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
@@ -60,7 +69,7 @@ namespace Mango.Services.RewardAPI
 
 
             app.MapControllers();
-
+            app.UserAzureServiceBusConsumer();
             ApplyMigration();
             app.Run();
 

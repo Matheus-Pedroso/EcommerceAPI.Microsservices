@@ -1,4 +1,5 @@
-﻿using Mango.Services.EmailAPI.Model.DTO;
+﻿using Mango.Services.EmailAPI.Message;
+using Mango.Services.EmailAPI.Model.DTO;
 
 namespace Mango.Services.EmailAPI.Services;
 
@@ -6,4 +7,5 @@ public interface IEmailService
 {
     Task EmailCartAndLog(CartDTO cartDTO);
     Task EmailRegisterUserAndLog(string email);
+    Task LogOrderPlaced(RewardsMessage rewardsMessage);
 }

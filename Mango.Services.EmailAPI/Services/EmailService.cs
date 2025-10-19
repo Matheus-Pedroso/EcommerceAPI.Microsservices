@@ -1,5 +1,6 @@
 ﻿using System.Text;
 using Mango.Services.EmailAPI.Data;
+using Mango.Services.EmailAPI.Message;
 using Mango.Services.EmailAPI.Model;
 using Mango.Services.EmailAPI.Model.DTO;
 using Microsoft.EntityFrameworkCore;
@@ -43,6 +44,12 @@ public class EmailService : IEmailService
         message.AppendLine("<br/>User registered with email: " + email);
 
         await LogAndEmail(message.ToString(), email);
+    }
+
+    public async Task LogOrderPlaced(RewardsMessage rewardsMessage)
+    {
+        string message = "New Order Placed. <br/> Order ID: " + rewardsMessage.OrderId;
+        await LogAndEmail(message, "admin@email.com");
     }
 
     private async Task<bool> LogAndEmail(string message, string email)
