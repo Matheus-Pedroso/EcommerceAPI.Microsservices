@@ -56,6 +56,14 @@ public class OrderAPIController(IProductService productService, AppDbContext con
                 Mode = "payment",
             };
 
+            var discountObj = new List<SessionDiscountOptions>()
+            {
+                new SessionDiscountOptions
+                {
+                    Coupon = stripeRequestDTO.OrderHeader.CouponCode
+                }
+            };
+
             foreach(var item in stripeRequestDTO.OrderHeader.OrderDetails)
             {
                 var sessionLineItem = new SessionLineItemOptions
@@ -74,6 +82,10 @@ public class OrderAPIController(IProductService productService, AppDbContext con
                 options.LineItems.Add(sessionLineItem);
             }
 
+            // If have discount
+            if (stripeRequestDTO.OrderHeader.Discount > 0)
+                options.Discounts = discountObj;
+
             var service = new SessionService();
             Session session = service.Create(options);
             stripeRequestDTO.StripeSessionUrl = session.Url;
@@ -82,6 +94,36 @@ public class OrderAPIController(IProductService productService, AppDbContext con
             session.AmountTotal -= (long)orderHeader.Discount;
             context.SaveChanges();
             _response.Result = stripeRequestDTO;
+        }
+        catch (Exception ex)
+        {
+            _response.Message = ex.Message;
+            _response.IsSuccess = false;
+        }
+        return _response;
+    }
+    [Authorize]
+    [HttpPost("ValidateStripeSession")]
+    public async Task<ResponseDTO> ValidateStripeSession([FromBody] int orderHeaderId)
+    {
+        try
+        {
+            OrderHeader orderHeader = context.OrderHeaders.First(u => u.OrderHeaderId == orderHeaderId);
+
+            var service = new SessionService();
+            Session session = service.Get(orderHeader.StripeSessionId);
+
+            var paymentIntentService = new PaymentIntentService();
+            PaymentIntent paymentIntent = paymentIntentService.Get(session.PaymentIntentId);
+
+            if (paymentIntent.Status == "succeeded")
+            {
+                orderHeader.PaymentIntentId = paymentIntent.Id;
+                orderHeader.Status = StaticDetails.Status_Approved;
+                context.SaveChanges(); 
+            }
+
+            _response.Result = mapper.Map<OrderHeaderDTO>(orderHeader);
         }
         catch (Exception ex)
         {

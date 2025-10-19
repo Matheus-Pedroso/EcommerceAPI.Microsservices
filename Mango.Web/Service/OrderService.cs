@@ -25,4 +25,14 @@ public class OrderService(IBaseService baseService) : IOrderService
             Url = StaticDetails.OrderAPIBase + "/api/order/CreateStripeSession"
         });
     }
+
+    public async Task<ResponseDTO?> ValidateStripeSession(int orderHeaderId)
+    {
+        return await baseService.SendAsync(new RequestDTO()
+        {
+            ApiType = StaticDetails.ApiType.POST,
+            Data = orderHeaderId,
+            Url = StaticDetails.OrderAPIBase + "/api/order/ValidateStripeSession"
+        });
+    }
 }

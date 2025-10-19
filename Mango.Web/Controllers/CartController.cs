@@ -2,6 +2,7 @@
 using System.Reflection.Metadata.Ecma335;
 using Mango.Web.Models;
 using Mango.Web.Service.IService;
+using Mango.Web.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
@@ -56,9 +57,18 @@ public class CartController(ICartService cartService, IOrderService orderService
         return View();
     }
 
-    [Authorize]
     public async Task<IActionResult> Confirmation(int orderId)
     {
+        ResponseDTO? response = await orderService.ValidateStripeSession(orderId);
+        if (response != null && response.IsSuccess)
+        {
+            OrderHeaderDTO orderHeader = JsonConvert.DeserializeObject<OrderHeaderDTO>(Convert.ToString(response.Result));
+            if (orderHeader.Status == StaticDetails.Status_Approved)
+            {
+                return View(orderId);
+            }
+            return RedirectToAction(nameof(CartIndex));
+        }
         return View(orderId);
     }
 
