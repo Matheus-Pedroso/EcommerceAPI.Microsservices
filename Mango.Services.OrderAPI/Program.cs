@@ -7,7 +7,9 @@ using Mango.Services.OrderAPI.Utility;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
+using Stripe;
 using AzureBus = Mango.MessageBus;
+using ProductService = Mango.Services.OrderAPI.Services.ProductService;
 
 namespace Mango.Services.OrderAPI
 {
@@ -79,6 +81,8 @@ namespace Mango.Services.OrderAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:ApiKey").Get<string>();
 
             app.UseHttpsRedirection();
 

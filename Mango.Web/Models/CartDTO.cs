@@ -1,6 +1,4 @@
-﻿using Mango.Services.Web.Models.DTO;
-
-namespace Mango.Services.Web.Models.DTO;
+﻿namespace Mango.Web.Models;
 
 public class CartDTO
 {

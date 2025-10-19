@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
+using Stripe;
 
 namespace Mango.Services.CouponAPI
 {
@@ -65,6 +66,8 @@ namespace Mango.Services.CouponAPI
                 app.UseSwagger();
                 app.UseSwaggerUI();
             }
+
+            StripeConfiguration.ApiKey = builder.Configuration.GetSection("Stripe:ApiKey").Get<string>();
 
             app.UseHttpsRedirection();
             app.UseAuthentication();

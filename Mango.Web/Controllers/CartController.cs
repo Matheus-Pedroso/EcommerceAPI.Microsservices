@@ -1,6 +1,5 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Reflection.Metadata.Ecma335;
-using Mango.Services.Web.Models.DTO;
 using Mango.Web.Models;
 using Mango.Web.Service.IService;
 using Microsoft.AspNetCore.Authorization;
@@ -9,7 +8,7 @@ using Newtonsoft.Json;
 
 namespace Mango.Web.Controllers;
 
-public class CartController(ICartService cartService) : Controller
+public class CartController(ICartService cartService, IOrderService orderService) : Controller
 {
     [Authorize]
     public async Task<IActionResult> CartIndex()
@@ -21,6 +20,46 @@ public class CartController(ICartService cartService) : Controller
     public async Task<IActionResult> Checkout()
     {
         return View(await LoadCartDTOBasedOnLoggedInUser());
+    }
+    
+    [HttpPost]
+    [ActionName("Checkout")]
+    public async Task<IActionResult> Checkout(CartDTO cartDTO)
+    {
+        CartDTO cart = await LoadCartDTOBasedOnLoggedInUser();
+        cart.CartHeader.Phone = cartDTO.CartHeader.Phone;
+        cart.CartHeader.Email = cartDTO.CartHeader.Email;
+        cart.CartHeader.Name = cartDTO.CartHeader.Name;
+
+        ResponseDTO? response = await orderService.CreateOrder(cart);
+        OrderHeaderDTO orderHeaderDTO = JsonConvert.DeserializeObject<OrderHeaderDTO>(Convert.ToString(response.Result));
+
+        if (response != null && response.IsSuccess)
+        {
+            // get stripe session and redirect to stripe to place order
+            var domain = Request.Scheme + "://" + Request.Host.Value + "/";
+
+            StripeRequestDTO stripeRequestDTO = new StripeRequestDTO()
+            {
+                ApprovedUrl = domain + "cart/confirmation?orderId=" + orderHeaderDTO.OrderHeaderId,
+                CancelUrl = domain + "cart/checkout",
+                OrderHeader = orderHeaderDTO
+            };
+
+            var stripeSessionResponse = await orderService.CreateStripeSession(stripeRequestDTO);
+
+            StripeRequestDTO stripeResponseResult = JsonConvert.DeserializeObject<StripeRequestDTO>(Convert.ToString(stripeSessionResponse.Result));
+            Response.Headers.Add("location", stripeResponseResult.StripeSessionUrl);
+
+            return new StatusCodeResult(303);
+        }
+        return View();
+    }
+
+    [Authorize]
+    public async Task<IActionResult> Confirmation(int orderId)
+    {
+        return View(orderId);
     }
 
     public async Task<IActionResult> Remove(int cartDetailsId)

@@ -1,5 +1,4 @@
-﻿using Mango.Services.Web.Models.DTO;
-using Mango.Web.Models;
+﻿using Mango.Web.Models;
 using Mango.Web.Service.IService;
 using Mango.Web.Utility;
 
@@ -13,7 +12,17 @@ public class OrderService(IBaseService baseService) : IOrderService
         {
             ApiType = StaticDetails.ApiType.POST,
             Data = cartDTO,
-            Url = StaticDetails.CartAPIBase + "/api/order/CreateOrder"
+            Url = StaticDetails.OrderAPIBase + "/api/order/CreateOrder"
+        });
+    }
+
+    public async Task<ResponseDTO?> CreateStripeSession(StripeRequestDTO stripeRequestDTO)
+    {
+        return await baseService.SendAsync(new RequestDTO()
+        {
+            ApiType = StaticDetails.ApiType.POST,
+            Data = stripeRequestDTO,
+            Url = StaticDetails.OrderAPIBase + "/api/order/CreateStripeSession"
         });
     }
 }

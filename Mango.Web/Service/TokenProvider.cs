@@ -2,7 +2,7 @@
 using Mango.Web.Utility;
 using Newtonsoft.Json.Linq;
 
-namespace Mango.Web.Servicel;
+namespace Mango.Web.Service;
 
 public class TokenProvider(IHttpContextAccessor _contextAccessor) : ITokenProvider
 {
