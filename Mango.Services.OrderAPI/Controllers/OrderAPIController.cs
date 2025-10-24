@@ -8,6 +8,7 @@ using Mango.Services.OrderAPI.Utility;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Stripe;
 using Stripe.Checkout;
 
@@ -18,6 +19,49 @@ namespace Mango.Services.OrderAPI.Controllers;
 public class OrderAPIController(IProductService productService, AppDbContext context, IMapper mapper, IConfiguration configuration, IMessageBus messageBus) : ControllerBase
 {
     protected ResponseDTO _response = new ResponseDTO();
+
+    [Authorize]
+    [HttpGet("GetOrders")]
+    public ResponseDTO? Get(string? userId = "")
+    {
+        try
+        {
+            IEnumerable<OrderHeader> objList;
+            if (User.IsInRole(StaticDetails.RoleAdmin))
+            {
+                objList = context.OrderHeaders.Include(o => o.OrderDetails).OrderByDescending(o => o.OrderHeaderId).ToList();
+            }
+            else
+            {
+                objList = context.OrderHeaders.Include(o => o.OrderDetails).Where(o => o.UserId == userId).OrderByDescending(o => o.OrderHeaderId).ToList();
+            }
+            _response.Result = mapper.Map<IEnumerable<OrderHeader>>(objList);
+        }
+        catch (Exception ex)
+        {
+            _response.IsSuccess = false;
+            _response.Message = ex.Message;
+        }
+        return _response;
+    }
+
+    [Authorize]
+    [HttpGet("GetOrder/{id:int}")]
+    public ResponseDTO? Get(int id)
+    {
+        try
+        {
+            OrderHeader orderHeader = context.OrderHeaders.Include(o => o.OrderDetails).First(o => o.OrderHeaderId == id);
+            _response.Result = mapper.Map<OrderHeaderDTO>(orderHeader);
+        }
+        catch (Exception ex)
+        {
+            _response.IsSuccess = false;
+            _response.Message = ex.Message;
+        }
+        return _response;
+    }
+
     [Authorize]
     [HttpPost("CreateOrder")]
     public async Task<ResponseDTO> CreateOrder([FromBody] CartDTO cartDTO)
@@ -139,6 +183,39 @@ public class OrderAPIController(IProductService productService, AppDbContext con
         {
             _response.Message = ex.Message;
             _response.IsSuccess = false;
+        }
+        return _response;
+    }
+
+    [Authorize]
+    [HttpPost("UpdateOrderStatus/{orderId:int}")]
+    public async Task<ResponseDTO> UpdateOrderStatus(int orderId, [FromBody] string newStatus)
+    {
+        try
+        {
+            OrderHeader orderHeader = context.OrderHeaders.First(o => o.OrderHeaderId == orderId);
+            if (orderHeader != null)
+            {
+                if (newStatus == StaticDetails.Status_Cancelled)
+                {
+                    // we will give refund
+                    var options = new RefundCreateOptions()
+                    {
+                        Reason = RefundReasons.RequestedByCustomer,
+                        PaymentIntent = orderHeader.PaymentIntentId,
+                    };
+
+                    var service = new RefundService();
+                    Refund refund = service.Create(options);
+                }
+                orderHeader.Status = newStatus;
+                context.SaveChanges();
+            }
+        }
+        catch (Exception ex)
+        {
+            _response.IsSuccess = false;
+            _response.Message = ex.Message;
         }
         return _response;
     }
