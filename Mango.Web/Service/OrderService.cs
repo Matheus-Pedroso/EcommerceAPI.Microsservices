@@ -31,6 +31,7 @@ public class OrderService(IBaseService baseService) : IOrderService
         return await baseService.SendAsync(new RequestDTO()
         {
             ApiType = StaticDetails.ApiType.GET,
+            Data = userId,
             Url = StaticDetails.OrderAPIBase + "/api/order/GetOrders"
         });
     }
@@ -40,7 +41,7 @@ public class OrderService(IBaseService baseService) : IOrderService
         return await baseService.SendAsync(new RequestDTO()
         {
             ApiType = StaticDetails.ApiType.GET,
-            Url = StaticDetails.OrderAPIBase + $"/api/order/GetOrders/{orderId}"
+            Url = StaticDetails.OrderAPIBase + $"/api/order/GetOrder/{orderId}"
         });
     }
 
@@ -48,7 +49,7 @@ public class OrderService(IBaseService baseService) : IOrderService
     {
         return await baseService.SendAsync(new RequestDTO()
         {
-            ApiType = StaticDetails.ApiType.GET,
+            ApiType = StaticDetails.ApiType.POST,
             Data = newStatus,
             Url = StaticDetails.OrderAPIBase + $"/api/order/UpdateOrderStatus/{orderId}"
         });

@@ -8,7 +8,7 @@ public class StaticDetails
     public static string CartAPIBase { get; set; } = string.Empty;
     public static string OrderAPIBase { get;set; } = string.Empty;
 
-    public const string RoleAdmin = "ADMIN";
+    public const string RoleAdmin = "ADMINISTRATOR";
     public const string RoleCustomer = "CUSTOMER";
     public const string TokenCookie = "JWTToken";
     public enum ApiType

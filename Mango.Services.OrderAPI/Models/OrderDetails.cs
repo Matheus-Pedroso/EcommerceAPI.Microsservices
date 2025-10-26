@@ -10,6 +10,7 @@ public class OrderDetails
     public int OrderDetailsId { get; set; }
     [ForeignKey("OrderHeaderId")]
     public int OrderHeaderId { get; set; }
+    [NotMapped]
     public OrderHeader? CartHeader { get; set; }
     public int ProductId { get; set; }
     public string ProductName { get; set; } 

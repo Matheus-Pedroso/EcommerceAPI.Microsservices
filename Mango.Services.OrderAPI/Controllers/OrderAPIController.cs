@@ -22,7 +22,7 @@ public class OrderAPIController(IProductService productService, AppDbContext con
 
     [Authorize]
     [HttpGet("GetOrders")]
-    public ResponseDTO? Get(string? userId = "")
+    public ResponseDTO? Get([FromBody] string? userId = "")
     {
         try
         {

@@ -9,6 +9,6 @@ public class StaticDetails
     public const string Status_Refunded = "Refunded";
     public const string Status_Cancelled = "Cancelled";
 
-    public const string RoleAdmin = "ADMIN";
+    public const string RoleAdmin = "ADMINISTRATOR";
     public const string RoleCostumer = "Customer";
 }
