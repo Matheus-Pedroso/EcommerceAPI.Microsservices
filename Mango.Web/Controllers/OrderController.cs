@@ -3,6 +3,7 @@ using System.IdentityModel.Tokens.Jwt;
 using Mango.Web.Models;
 using Mango.Web.Service.IService;
 using Mango.Web.Utility;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Newtonsoft.Json;
 
@@ -68,7 +69,8 @@ public class OrderController(IOrderService orderService) : Controller
     }
 
     [HttpGet]
-    public IActionResult GetAll()
+    [Authorize]
+    public IActionResult GetAll([FromQuery] string status)
     {
         IEnumerable<OrderHeaderDTO> list;
         string userId = string.Empty;
@@ -80,6 +82,20 @@ public class OrderController(IOrderService orderService) : Controller
         if (responseDTO != null)
         {
             list = JsonConvert.DeserializeObject<List<OrderHeaderDTO>>(Convert.ToString(responseDTO.Result));
+            switch (status)
+            {
+                case "approved":
+                    list = list.Where(s => s.Status == StaticDetails.Status_Approved);
+                    break;
+                case "readyforpickup":
+                    list = list.Where(s => s.Status == StaticDetails.Status_ReadyForPickup);
+                    break;
+                case "cancelled":
+                    list = list.Where(s => s.Status == StaticDetails.Status_Cancelled || s.Status == StaticDetails.Status_Refunded);
+                    break;
+                default:
+                    break;
+            }
         }
         else
         {
