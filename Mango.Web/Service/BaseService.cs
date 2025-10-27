@@ -21,20 +21,47 @@ public class BaseService : IBaseService
         {
             HttpClient client = _httpClientFactory.CreateClient("MangoAPI");
             HttpRequestMessage message = new HttpRequestMessage();
-            message.Headers.Add("Accept", "application/json");
+            if (requestDTO.ContentType == ContentType.MultipartFormData)
+            {
+                message.Headers.Add("Accept", "*/*");
+            }
+            else
+            {
+                message.Headers.Add("Accept", "application/json");
+            }
             // token
             if (withBearer)
             {
                 var token = _tokenProvider.GetToken();
                 message.Headers.Add("Authorization", $"Bearer {token}");
             }
-
-
             message.RequestUri = new Uri(requestDTO.Url);
-            if (requestDTO.Data != null)
+
+            if (requestDTO.ContentType == ContentType.MultipartFormData)
             {
-                message.Content = new StringContent(JsonConvert.SerializeObject(requestDTO.Data), Encoding.UTF8, "application/json");
+                var content = new MultipartFormDataContent();
+
+                foreach (var prop in requestDTO.Data.GetType().GetProperties())
+                {
+                    var value = prop.GetValue(requestDTO.Data);
+                    if (value is FormFile)
+                    {
+                        var file = (FormFile)value;
+                        if (file != null)
+                        {
+                            content.Add(new StreamContent(file.OpenReadStream()), prop.Name, file.FileName);
+                        }
+                    }
+                }
             }
+            else
+            {
+                if (requestDTO.Data != null)
+                {
+                    message.Content = new StringContent(JsonConvert.SerializeObject(requestDTO.Data), Encoding.UTF8, "application/json");
+                }
+            }
+            
             HttpResponseMessage? apiResponse = null;
 
             switch (requestDTO.ApiType)

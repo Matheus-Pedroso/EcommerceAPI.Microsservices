@@ -5,6 +5,7 @@ using Mango.Services.ShoppingCartAPI.Data;
 using Mango.Services.ShoppingCartAPI.Models;
 using Mango.Services.ShoppingCartAPI.Models.DTO;
 using Mango.Services.ShoppingCartAPI.Services.IServices;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -111,6 +112,7 @@ public class CartAPIController(AppDbContext _context, IMapper mapper, IProductSe
     }
 
     [HttpPost("CartUpsert")]
+    [Authorize]
     public async Task<ResponseDTO> CartUpsert(CartDTO cartDTO)
     {
         try
