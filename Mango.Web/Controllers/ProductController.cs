@@ -46,7 +46,7 @@ public class ProductController(IProductService productService) : Controller
                 TempData["Error"] = response?.Message;
             }
         }
-        return View();
+        return View(model);
     }
 
     public async Task<IActionResult> ProductUpdate(int id)
@@ -83,7 +83,7 @@ public class ProductController(IProductService productService) : Controller
                 TempData["Error"] = response?.Message;
             }
         }
-        return View();
+        return View(model);
     }
 
     public async Task<IActionResult> ProductDelete(int id)
