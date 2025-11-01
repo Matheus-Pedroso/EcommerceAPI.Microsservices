@@ -67,7 +67,7 @@ public class CouponAPIController(AppDbContext _context, IMapper _mapper) : Contr
     }
 
     [HttpPost]
-    //[Authorize(Roles = "ADMINISTRATOR")]
+    [Authorize(Roles = "ADMINISTRATOR")]
     public ResponseDTO Post([FromBody] CouponDTO couponDTO)
     {
         try
@@ -98,7 +98,7 @@ public class CouponAPIController(AppDbContext _context, IMapper _mapper) : Contr
     }
 
     [HttpPut]
-    //[Authorize(Roles = "ADMINISTRATOR")]
+    [Authorize(Roles = "ADMINISTRATOR")]
     public ResponseDTO Put([FromBody] CouponDTO couponDTO)
     {
         try
@@ -118,7 +118,7 @@ public class CouponAPIController(AppDbContext _context, IMapper _mapper) : Contr
 
     [HttpDelete]
     [Route("{id:int}")]
-    //[Authorize(Roles = "ADMINISTRATOR")]
+    [Authorize(Roles = "ADMINISTRATOR")]
     public ResponseDTO Delete(int id)
     {
         try
